@@ -1,5 +1,30 @@
-#!/usr/bin/python
+#!/usr/bin/env ruby
 
-# To solve this problem, make the './run' executable handle any
-# appropriate command line arguments and stdin and output the
-# solution to stdout.
+
+ARGV.find { |x| x =~ /--in=(\d+)/ }
+primary = $1.to_i
+ARGV.find { |x| x =~ /--out=(\d+)/ }
+total = $1.to_i
+
+found = 0
+bytes = []
+
+total.times do
+  line = $stdin.gets
+  if found == primary
+    bytes << nil
+    next
+  end
+  if line == "MISSING\n"
+    bytes << nil
+    next
+  end
+  bytes << line.strip.split('/')
+end
+
+if bytes[0...primary].compact.length == primary
+  bytes[0...primary].each do |byte|
+    puts "%08b" % byte
+  end
+  exit
+end
