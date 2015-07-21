@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+#require 'byebug' rescue nil
 
 ARGV.find { |x| x =~ /--in=(\d+)/ }
 primary = $1.to_i
@@ -9,8 +10,13 @@ total = $1.to_i
 found = 0
 bytes = []
 
+file = $stdin
+#file = File.open('example1')
+
+#debugger
+
 total.times do
-  line = $stdin.gets
+  line = file.gets
   if found == primary
     bytes << nil
     next
@@ -19,12 +25,12 @@ total.times do
     bytes << nil
     next
   end
-  bytes << line.strip.split('/')
+  bytes << line.strip.split('/').map(&:to_i)
 end
 
 if bytes[0...primary].compact.length == primary
   bytes[0...primary].each do |byte|
-    puts "%08b" % byte
+    puts "%08b" % byte.first
   end
   exit
 end
