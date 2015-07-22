@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 
-require 'byebug' rescue nil
 require_relative 'polynomial'
 
 ARGV.find { |x| x =~ /--in=(\d+)/ }
