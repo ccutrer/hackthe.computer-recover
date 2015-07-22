@@ -1,4 +1,5 @@
-
+HandyHash = Hash
+Hash.class_eval { alias merge_abbrv merge }
 
 # Polynomials on a single variable.
 #
@@ -70,7 +71,7 @@ class Polynomial
   def self.from_string(s, params={})
     Polynomial.new(self.coefs_from_string(s, FromStringDefaults.merge_abbrv(params)))
   end
-  
+
   # Degree of the polynomial (i.e., highest not null power of the variable).
   #
   def degree
@@ -349,7 +350,7 @@ class Polynomial
   # Integer. If degree is positive, an exception is raised.
   #
   def to_i; to_num.to_i; end
-
+  
   # Compares with another Polynomial by degrees then coefficients.
   #
   def <=>(other)
