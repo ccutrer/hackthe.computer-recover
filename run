@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
-#require 'byebug' rescue nil
+require 'byebug' rescue nil
+require_relative 'polynomial'
 
 ARGV.find { |x| x =~ /--in=(\d+)/ }
 primary = $1.to_i
@@ -17,6 +18,7 @@ file = $stdin
 
 total.times do
   line = file.gets
+  # ignore "extra" data (we only need/want the primary number of points)
   if found == primary
     bytes << nil
     next
@@ -25,12 +27,45 @@ total.times do
     bytes << nil
     next
   end
-  bytes << line.strip.split('/').map(&:to_i)
+  bytes << Rational(*line.strip.split('/').map(&:to_i))
 end
 
 if bytes[0...primary].compact.length == primary
   bytes[0...primary].each do |byte|
-    puts "%08b" % byte.first
+    puts "%08b" % byte
   end
   exit
+end
+
+points = []
+bytes.each_with_index do |byte, x|
+  points << [x, byte]
+end
+
+points = points.select { |(_, y)| !!y }
+#points = [[0, -250],
+#[10, 0],
+#[20, 50],
+#[30, -100]]
+
+degree = points.length - 1
+
+polynomials = (0..degree).map do |i|
+  except_me = ((0..degree).to_a - [i])
+  numerators = except_me.map do |j|
+    Polynomial.new(-points[j].first, 1)
+  end
+  numerator = numerators.inject(&:*)
+
+  denominator = except_me.map do |j|
+    points[i].first - points[j].first
+  end.inject(&:*)
+
+  numerator / denominator.to_r * points[i].last
+end
+
+p = polynomials.inject(&:+)
+
+(0...primary).each do |i|
+  puts "%08b" % p.substitute(i)
 end
